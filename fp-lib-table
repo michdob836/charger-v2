@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name charger-v2)(type KiCad)(uri ${KIPRJMOD}/charger-v2.pretty)(options "")(descr ""))
+)

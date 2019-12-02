@@ -1,0 +1,4 @@
+(sym_lib_table
+  (lib (name pmos_ppak)(type Legacy)(uri ${KIPRJMOD}/pmos_ppak.lib)(options "")(descr ""))
+  (lib (name charger-v2-rescue)(type Legacy)(uri ${KIPRJMOD}/charger-v2-rescue.lib)(options "")(descr ""))
+)
