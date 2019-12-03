@@ -3,27 +3,29 @@ charger-v2-code.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000000  00803f00  00803f00  00000110  2**0
+  0 .data         00000000  00803f00  00803f00  00000210  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         000000bc  00000000  00000000  00000054  2**1
+  1 .text         000001bc  00000000  00000000  00000054  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .comment      00000030  00000000  00000000  00000110  2**0
+  2 .comment      00000030  00000000  00000000  00000210  2**0
                   CONTENTS, READONLY
-  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000140  2**2
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000240  2**2
                   CONTENTS, READONLY
-  4 .debug_aranges 00000028  00000000  00000000  0000017c  2**0
+  4 .debug_aranges 00000048  00000000  00000000  0000027c  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   00001a1e  00000000  00000000  000001a4  2**0
+  5 .debug_info   00001c4d  00000000  00000000  000002c4  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 00001558  00000000  00000000  00001bc2  2**0
+  6 .debug_abbrev 0000160e  00000000  00000000  00001f11  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   000002b6  00000000  00000000  0000311a  2**0
+  7 .debug_line   000003cf  00000000  00000000  0000351f  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  00000034  00000000  00000000  000033d0  2**2
+  8 .debug_frame  00000080  00000000  00000000  000038f0  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    00000c93  00000000  00000000  00003404  2**0
+  9 .debug_str    00000ee0  00000000  00000000  00003970  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_ranges 00000018  00000000  00000000  00004097  2**0
+ 10 .debug_loc    0000010d  00000000  00000000  00004850  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000038  00000000  00000000  0000495d  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -63,125 +65,257 @@ Disassembly of section .text:
   3a:	cd bf       	out	0x3d, r28	; 61
   3c:	df e3       	ldi	r29, 0x3F	; 63
   3e:	de bf       	out	0x3e, r29	; 62
-  40:	35 d0       	rcall	.+106    	; 0xac <main>
-  42:	3a c0       	rjmp	.+116    	; 0xb8 <_exit>
+  40:	aa d0       	rcall	.+340    	; 0x196 <main>
+  42:	ba c0       	rjmp	.+372    	; 0x1b8 <_exit>
 
 00000044 <__bad_interrupt>:
   44:	dd cf       	rjmp	.-70     	; 0x0 <__vectors>
 
 00000046 <init>:
-	// PA3 as LED1
-	#define LED1_bp 3
-	// PA2 as LED2
-	#define LED2_bp 2
-	// enable outputs for LEDs
-	PORTA.DIR |= 1 << LED1_bp | 1 << LED2_bp;
-  46:	e0 e0       	ldi	r30, 0x00	; 0
-  48:	f4 e0       	ldi	r31, 0x04	; 4
-  4a:	80 81       	ld	r24, Z
-  4c:	8c 60       	ori	r24, 0x0C	; 12
-  4e:	80 83       	st	Z, r24
-	// turn them off: 0 -> LED turned on;
-	PORTA.OUT |= 1 << LED1_bp | 1 << LED2_bp; 
-  50:	84 81       	ldd	r24, Z+4	; 0x04
-  52:	8c 60       	ori	r24, 0x0C	; 12
-  54:	84 83       	std	Z+4, r24	; 0x04
-	
-	// digital in:
-	// PA4 as HW_BUTTON
-	#define HW_BUTTON_bp 4;
-	PORTA.DIRCLR = 1 << HW_BUTTON_bp;
-  56:	80 e1       	ldi	r24, 0x10	; 16
-  58:	82 83       	std	Z+2, r24	; 0x02
-	// enable inverted input (0 shows as 1 in PORTA.IN)
-	PORTA.PIN4CTRL |= 1 << 7; 
-  5a:	84 89       	ldd	r24, Z+20	; 0x14
-  5c:	80 68       	ori	r24, 0x80	; 128
-  5e:	84 8b       	std	Z+20, r24	; 0x14
-	// analog in:
-	// PA1 as ADC_SENSE1
-	// PA5 as ADC_SENSE2
-	// PA7 as ADC_TEMP
-	// disable input buffers of adc pins
-	PORTA.PIN1CTRL = (PORTA.PIN1CTRL & 0xf8) | 0x04;
-  60:	81 89       	ldd	r24, Z+17	; 0x11
-  62:	88 7f       	andi	r24, 0xF8	; 248
-  64:	84 60       	ori	r24, 0x04	; 4
-  66:	81 8b       	std	Z+17, r24	; 0x11
-	PORTA.PIN5CTRL = (PORTA.PIN5CTRL & 0xf8) | 0x04;
-  68:	85 89       	ldd	r24, Z+21	; 0x15
-  6a:	88 7f       	andi	r24, 0xF8	; 248
-  6c:	84 60       	ori	r24, 0x04	; 4
-  6e:	85 8b       	std	Z+21, r24	; 0x15
-	PORTA.PIN7CTRL = (PORTA.PIN7CTRL & 0xf8) | 0x04;
-  70:	87 89       	ldd	r24, Z+23	; 0x17
-  72:	88 7f       	andi	r24, 0xF8	; 248
-  74:	84 60       	ori	r24, 0x04	; 4
-  76:	87 8b       	std	Z+23, r24	; 0x17
-	//resolution to 10 bit
-	ADC0.CTRLA |= 1 << 2;
-  78:	e0 e0       	ldi	r30, 0x00	; 0
-  7a:	f6 e0       	ldi	r31, 0x06	; 6
-  7c:	80 81       	ld	r24, Z
-  7e:	84 60       	ori	r24, 0x04	; 4
-  80:	80 83       	st	Z, r24
-	//no samples accumulated
-	ADC0.CTRLB  = (ADC0.CTRLB & 0xf8) | 0x00;
-  82:	81 81       	ldd	r24, Z+1	; 0x01
-  84:	88 7f       	andi	r24, 0xF8	; 248
-  86:	81 83       	std	Z+1, r24	; 0x01
-	//set volt ref to internal
-	ADC0.CTRLC = (ADC0.CTRLC & 0x3f) | 0x1 << 4;
-  88:	82 81       	ldd	r24, Z+2	; 0x02
-  8a:	8f 72       	andi	r24, 0x2F	; 47
-  8c:	80 61       	ori	r24, 0x10	; 16
-  8e:	82 83       	std	Z+2, r24	; 0x02
-	// todo: configure VREF *****************************************************
-	//set Sample Capacitance to reduced (recommended for >1V)
-	ADC0.CTRLC |= 1 << 6;
-  90:	82 81       	ldd	r24, Z+2	; 0x02
-  92:	80 64       	ori	r24, 0x40	; 64
-  94:	82 83       	std	Z+2, r24	; 0x02
-	// TODO: set pright prescaler ***********************************************
-	ADC0.CTRLC = (ADC0.CTRLC & 0xf8) | 0x0 << 0; //temporary to DIV2
-  96:	82 81       	ldd	r24, Z+2	; 0x02
-  98:	88 7f       	andi	r24, 0xF8	; 248
-  9a:	82 83       	std	Z+2, r24	; 0x02
-	// configure default input for adc as PIN5 (will measure cell voltage at 0 current)
-	ADC0.MUXPOS = (ADC0.MUXPOS & 0xe0) | 0x05;
-  9c:	86 81       	ldd	r24, Z+6	; 0x06
-  9e:	80 7e       	andi	r24, 0xE0	; 224
-  a0:	85 60       	ori	r24, 0x05	; 5
-  a2:	86 83       	std	Z+6, r24	; 0x06
-	// enable adc
-	ADC0.CTRLA |= 1 << ADC_ENABLE_bp;
-  a4:	80 81       	ld	r24, Z
-  a6:	81 60       	ori	r24, 0x01	; 1
-  a8:	80 83       	st	Z, r24
-  aa:	08 95       	ret
+	return du;
+};
 
-000000ac <main>:
-#include <util/delay.h>
-#include "init.c"
+uint16_t getTempVoltage(){
+	return 0;
+  46:	cf 93       	push	r28
+  48:	df 93       	push	r29
+  4a:	e0 e0       	ldi	r30, 0x00	; 0
+  4c:	f4 e0       	ldi	r31, 0x04	; 4
+  4e:	80 81       	ld	r24, Z
+  50:	8c 60       	ori	r24, 0x0C	; 12
+  52:	80 83       	st	Z, r24
+  54:	84 81       	ldd	r24, Z+4	; 0x04
+  56:	8c 60       	ori	r24, 0x0C	; 12
+  58:	84 83       	std	Z+4, r24	; 0x04
+  5a:	80 e1       	ldi	r24, 0x10	; 16
+  5c:	82 83       	std	Z+2, r24	; 0x02
+  5e:	84 89       	ldd	r24, Z+20	; 0x14
+  60:	80 68       	ori	r24, 0x80	; 128
+  62:	84 8b       	std	Z+20, r24	; 0x14
+  64:	81 89       	ldd	r24, Z+17	; 0x11
+  66:	88 7f       	andi	r24, 0xF8	; 248
+  68:	84 60       	ori	r24, 0x04	; 4
+  6a:	81 8b       	std	Z+17, r24	; 0x11
+  6c:	85 89       	ldd	r24, Z+21	; 0x15
+  6e:	88 7f       	andi	r24, 0xF8	; 248
+  70:	84 60       	ori	r24, 0x04	; 4
+  72:	85 8b       	std	Z+21, r24	; 0x15
+  74:	87 89       	ldd	r24, Z+23	; 0x17
+  76:	88 7f       	andi	r24, 0xF8	; 248
+  78:	84 60       	ori	r24, 0x04	; 4
+  7a:	87 8b       	std	Z+23, r24	; 0x17
+  7c:	a0 e0       	ldi	r26, 0x00	; 0
+  7e:	b6 e0       	ldi	r27, 0x06	; 6
+  80:	8c 91       	ld	r24, X
+  82:	8c 93       	st	X, r24
+  84:	11 96       	adiw	r26, 0x01	; 1
+  86:	8c 91       	ld	r24, X
+  88:	11 97       	sbiw	r26, 0x01	; 1
+  8a:	88 7f       	andi	r24, 0xF8	; 248
+  8c:	11 96       	adiw	r26, 0x01	; 1
+  8e:	8c 93       	st	X, r24
+  90:	11 97       	sbiw	r26, 0x01	; 1
+  92:	12 96       	adiw	r26, 0x02	; 2
+  94:	8c 91       	ld	r24, X
+  96:	12 97       	sbiw	r26, 0x02	; 2
+  98:	8f 72       	andi	r24, 0x2F	; 47
+  9a:	80 61       	ori	r24, 0x10	; 16
+  9c:	12 96       	adiw	r26, 0x02	; 2
+  9e:	8c 93       	st	X, r24
+  a0:	12 97       	sbiw	r26, 0x02	; 2
+  a2:	c0 ea       	ldi	r28, 0xA0	; 160
+  a4:	d0 e0       	ldi	r29, 0x00	; 0
+  a6:	88 81       	ld	r24, Y
+  a8:	80 63       	ori	r24, 0x30	; 48
+  aa:	88 83       	st	Y, r24
+  ac:	88 81       	ld	r24, Y
+  ae:	82 60       	ori	r24, 0x02	; 2
+  b0:	88 83       	st	Y, r24
+  b2:	12 96       	adiw	r26, 0x02	; 2
+  b4:	8c 91       	ld	r24, X
+  b6:	12 97       	sbiw	r26, 0x02	; 2
+  b8:	80 64       	ori	r24, 0x40	; 64
+  ba:	12 96       	adiw	r26, 0x02	; 2
+  bc:	8c 93       	st	X, r24
+  be:	12 97       	sbiw	r26, 0x02	; 2
+  c0:	12 96       	adiw	r26, 0x02	; 2
+  c2:	8c 91       	ld	r24, X
+  c4:	12 97       	sbiw	r26, 0x02	; 2
+  c6:	88 7f       	andi	r24, 0xF8	; 248
+  c8:	12 96       	adiw	r26, 0x02	; 2
+  ca:	8c 93       	st	X, r24
+  cc:	12 97       	sbiw	r26, 0x02	; 2
+  ce:	16 96       	adiw	r26, 0x06	; 6
+  d0:	8c 91       	ld	r24, X
+  d2:	16 97       	sbiw	r26, 0x06	; 6
+  d4:	80 7e       	andi	r24, 0xE0	; 224
+  d6:	85 60       	ori	r24, 0x05	; 5
+  d8:	16 96       	adiw	r26, 0x06	; 6
+  da:	8c 93       	st	X, r24
+  dc:	16 97       	sbiw	r26, 0x06	; 6
+  de:	8c 91       	ld	r24, X
+  e0:	81 60       	ori	r24, 0x01	; 1
+  e2:	8c 93       	st	X, r24
+  e4:	88 81       	ld	r24, Y
+  e6:	82 60       	ori	r24, 0x02	; 2
+  e8:	88 83       	st	Y, r24
+  ea:	88 81       	ld	r24, Y
+  ec:	81 60       	ori	r24, 0x01	; 1
+  ee:	88 83       	st	Y, r24
+  f0:	86 89       	ldd	r24, Z+22	; 0x16
+  f2:	88 7f       	andi	r24, 0xF8	; 248
+  f4:	86 8b       	std	Z+22, r24	; 0x16
+  f6:	86 89       	ldd	r24, Z+22	; 0x16
+  f8:	84 60       	ori	r24, 0x04	; 4
+  fa:	86 8b       	std	Z+22, r24	; 0x16
+  fc:	86 89       	ldd	r24, Z+22	; 0x16
+  fe:	87 7f       	andi	r24, 0xF7	; 247
+ 100:	86 8b       	std	Z+22, r24	; 0x16
+ 102:	e0 e8       	ldi	r30, 0x80	; 128
+ 104:	f6 e0       	ldi	r31, 0x06	; 6
+ 106:	8f ef       	ldi	r24, 0xFF	; 255
+ 108:	81 83       	std	Z+1, r24	; 0x01
+ 10a:	80 81       	ld	r24, Z
+ 10c:	81 60       	ori	r24, 0x01	; 1
+ 10e:	80 83       	st	Z, r24
+ 110:	80 81       	ld	r24, Z
+ 112:	80 64       	ori	r24, 0x40	; 64
+ 114:	80 83       	st	Z, r24
+ 116:	df 91       	pop	r29
+ 118:	cf 91       	pop	r28
+ 11a:	08 95       	ret
+
+0000011c <getCellVoltage>:
+ 11c:	e0 e0       	ldi	r30, 0x00	; 0
+ 11e:	f6 e0       	ldi	r31, 0x06	; 6
+ 120:	86 81       	ldd	r24, Z+6	; 0x06
+ 122:	80 7e       	andi	r24, 0xE0	; 224
+ 124:	85 60       	ori	r24, 0x05	; 5
+ 126:	86 83       	std	Z+6, r24	; 0x06
+ 128:	81 e0       	ldi	r24, 0x01	; 1
+ 12a:	80 87       	std	Z+8, r24	; 0x08
+ 12c:	83 85       	ldd	r24, Z+11	; 0x0b
+ 12e:	80 ff       	sbrs	r24, 0
+ 130:	fd cf       	rjmp	.-6      	; 0x12c <getCellVoltage+0x10>
+ 132:	e0 e0       	ldi	r30, 0x00	; 0
+ 134:	f6 e0       	ldi	r31, 0x06	; 6
+ 136:	86 81       	ldd	r24, Z+6	; 0x06
+ 138:	80 7e       	andi	r24, 0xE0	; 224
+ 13a:	81 60       	ori	r24, 0x01	; 1
+ 13c:	86 83       	std	Z+6, r24	; 0x06
+ 13e:	40 89       	ldd	r20, Z+16	; 0x10
+ 140:	51 89       	ldd	r21, Z+17	; 0x11
+ 142:	93 85       	ldd	r25, Z+11	; 0x0b
+ 144:	90 ff       	sbrs	r25, 0
+ 146:	fd cf       	rjmp	.-6      	; 0x142 <getCellVoltage+0x26>
+ 148:	e0 e0       	ldi	r30, 0x00	; 0
+ 14a:	f6 e0       	ldi	r31, 0x06	; 6
+ 14c:	20 89       	ldd	r18, Z+16	; 0x10
+ 14e:	31 89       	ldd	r19, Z+17	; 0x11
+ 150:	90 85       	ldd	r25, Z+8	; 0x08
+ 152:	9e 7f       	andi	r25, 0xFE	; 254
+ 154:	90 87       	std	Z+8, r25	; 0x08
+ 156:	ca 01       	movw	r24, r20
+ 158:	82 1b       	sub	r24, r18
+ 15a:	93 0b       	sbc	r25, r19
+ 15c:	08 95       	ret
+
+0000015e <ledR>:
+void ledR(uint8_t turnOn){
+	//inverted port state
+	if(turnOn){
+ 15e:	88 23       	and	r24, r24
+ 160:	31 f0       	breq	.+12     	; 0x16e <ledR+0x10>
+		PORTA.OUTCLR |= 1 << 3; 
+ 162:	e0 e0       	ldi	r30, 0x00	; 0
+ 164:	f4 e0       	ldi	r31, 0x04	; 4
+ 166:	86 81       	ldd	r24, Z+6	; 0x06
+ 168:	88 60       	ori	r24, 0x08	; 8
+ 16a:	86 83       	std	Z+6, r24	; 0x06
+ 16c:	08 95       	ret
+	} else {
+		PORTA.OUTSET |= 1 << 3; 
+ 16e:	e0 e0       	ldi	r30, 0x00	; 0
+ 170:	f4 e0       	ldi	r31, 0x04	; 4
+ 172:	85 81       	ldd	r24, Z+5	; 0x05
+ 174:	88 60       	ori	r24, 0x08	; 8
+ 176:	85 83       	std	Z+5, r24	; 0x05
+ 178:	08 95       	ret
+
+0000017a <ledG>:
+	}
+}
+
+void ledG(uint8_t turnOn){
+	//inverted port state
+	if(turnOn){
+ 17a:	88 23       	and	r24, r24
+ 17c:	31 f0       	breq	.+12     	; 0x18a <ledG+0x10>
+		PORTA.OUTCLR |= 1 << 2;
+ 17e:	e0 e0       	ldi	r30, 0x00	; 0
+ 180:	f4 e0       	ldi	r31, 0x04	; 4
+ 182:	86 81       	ldd	r24, Z+6	; 0x06
+ 184:	84 60       	ori	r24, 0x04	; 4
+ 186:	86 83       	std	Z+6, r24	; 0x06
+ 188:	08 95       	ret
+		} else {
+		PORTA.OUTSET |= 1 << 2;
+ 18a:	e0 e0       	ldi	r30, 0x00	; 0
+ 18c:	f4 e0       	ldi	r31, 0x04	; 4
+ 18e:	85 81       	ldd	r24, Z+5	; 0x05
+ 190:	84 60       	ori	r24, 0x04	; 4
+ 192:	85 83       	std	Z+5, r24	; 0x05
+ 194:	08 95       	ret
+
+00000196 <main>:
+
+
 
 int main(void)
 {
 	init();
-  ac:	cc df       	rcall	.-104    	; 0x46 <init>
-	{
+ 196:	57 df       	rcall	.-338    	; 0x46 <init>
+	ledR(1);
+ 198:	81 e0       	ldi	r24, 0x01	; 1
+ 19a:	e1 df       	rcall	.-62     	; 0x15e <ledR>
 	
-		//_delay_ms(500);
-		//PORTA.OUTTGL = 0;
-		//delay_ms(500);
-			PORTA.OUTTGL = 1 << 2 | 1 << 3;
-  ae:	e0 e0       	ldi	r30, 0x00	; 0
-  b0:	f4 e0       	ldi	r31, 0x04	; 4
-  b2:	8c e0       	ldi	r24, 0x0C	; 12
-  b4:	87 83       	std	Z+7, r24	; 0x07
-  b6:	fe cf       	rjmp	.-4      	; 0xb4 <main+0x8>
+	int16_t u = 0;
+	while (u < uc_min || u > uc_max)
+	{
+		u = getCellVoltage();
+ 19c:	bf df       	rcall	.-130    	; 0x11c <getCellVoltage>
+{
+	init();
+	ledR(1);
+	
+	int16_t u = 0;
+	while (u < uc_min || u > uc_max)
+ 19e:	8b 59       	subi	r24, 0x9B	; 155
+ 1a0:	92 40       	sbci	r25, 0x02	; 2
+ 1a2:	8e 34       	cpi	r24, 0x4E	; 78
+ 1a4:	91 40       	sbci	r25, 0x01	; 1
+ 1a6:	d0 f7       	brcc	.-12     	; 0x19c <main+0x6>
+	{
+		u = getCellVoltage();
+	}
+	ledR(0);
+ 1a8:	80 e0       	ldi	r24, 0x00	; 0
+ 1aa:	d9 df       	rcall	.-78     	; 0x15e <ledR>
+	ledG(1);
+ 1ac:	81 e0       	ldi	r24, 0x01	; 1
+ 1ae:	e5 df       	rcall	.-54     	; 0x17a <ledG>
+	
+	sei();
+ 1b0:	78 94       	sei
+	
+	
+}
+ 1b2:	80 e0       	ldi	r24, 0x00	; 0
+ 1b4:	90 e0       	ldi	r25, 0x00	; 0
+ 1b6:	08 95       	ret
 
-000000b8 <_exit>:
-  b8:	f8 94       	cli
+000001b8 <_exit>:
+ 1b8:	f8 94       	cli
 
-000000ba <__stop_program>:
-  ba:	ff cf       	rjmp	.-2      	; 0xba <__stop_program>
+000001ba <__stop_program>:
+ 1ba:	ff cf       	rjmp	.-2      	; 0x1ba <__stop_program>
