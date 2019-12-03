@@ -1,0 +1,187 @@
+
+charger-v2-code.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         00000000  00803f00  00803f00  00000110  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         000000bc  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .comment      00000030  00000000  00000000  00000110  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000140  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 00000028  00000000  00000000  0000017c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   00001a1e  00000000  00000000  000001a4  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 00001558  00000000  00000000  00001bc2  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   000002b6  00000000  00000000  0000311a  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000034  00000000  00000000  000033d0  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    00000c93  00000000  00000000  00003404  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_ranges 00000018  00000000  00000000  00004097  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	19 c0       	rjmp	.+50     	; 0x34 <__ctors_end>
+   2:	20 c0       	rjmp	.+64     	; 0x44 <__bad_interrupt>
+   4:	1f c0       	rjmp	.+62     	; 0x44 <__bad_interrupt>
+   6:	1e c0       	rjmp	.+60     	; 0x44 <__bad_interrupt>
+   8:	1d c0       	rjmp	.+58     	; 0x44 <__bad_interrupt>
+   a:	1c c0       	rjmp	.+56     	; 0x44 <__bad_interrupt>
+   c:	1b c0       	rjmp	.+54     	; 0x44 <__bad_interrupt>
+   e:	1a c0       	rjmp	.+52     	; 0x44 <__bad_interrupt>
+  10:	19 c0       	rjmp	.+50     	; 0x44 <__bad_interrupt>
+  12:	18 c0       	rjmp	.+48     	; 0x44 <__bad_interrupt>
+  14:	17 c0       	rjmp	.+46     	; 0x44 <__bad_interrupt>
+  16:	16 c0       	rjmp	.+44     	; 0x44 <__bad_interrupt>
+  18:	15 c0       	rjmp	.+42     	; 0x44 <__bad_interrupt>
+  1a:	14 c0       	rjmp	.+40     	; 0x44 <__bad_interrupt>
+  1c:	13 c0       	rjmp	.+38     	; 0x44 <__bad_interrupt>
+  1e:	12 c0       	rjmp	.+36     	; 0x44 <__bad_interrupt>
+  20:	11 c0       	rjmp	.+34     	; 0x44 <__bad_interrupt>
+  22:	10 c0       	rjmp	.+32     	; 0x44 <__bad_interrupt>
+  24:	0f c0       	rjmp	.+30     	; 0x44 <__bad_interrupt>
+  26:	0e c0       	rjmp	.+28     	; 0x44 <__bad_interrupt>
+  28:	0d c0       	rjmp	.+26     	; 0x44 <__bad_interrupt>
+  2a:	0c c0       	rjmp	.+24     	; 0x44 <__bad_interrupt>
+  2c:	0b c0       	rjmp	.+22     	; 0x44 <__bad_interrupt>
+  2e:	0a c0       	rjmp	.+20     	; 0x44 <__bad_interrupt>
+  30:	09 c0       	rjmp	.+18     	; 0x44 <__bad_interrupt>
+  32:	08 c0       	rjmp	.+16     	; 0x44 <__bad_interrupt>
+
+00000034 <__ctors_end>:
+  34:	11 24       	eor	r1, r1
+  36:	1f be       	out	0x3f, r1	; 63
+  38:	cf ef       	ldi	r28, 0xFF	; 255
+  3a:	cd bf       	out	0x3d, r28	; 61
+  3c:	df e3       	ldi	r29, 0x3F	; 63
+  3e:	de bf       	out	0x3e, r29	; 62
+  40:	35 d0       	rcall	.+106    	; 0xac <main>
+  42:	3a c0       	rjmp	.+116    	; 0xb8 <_exit>
+
+00000044 <__bad_interrupt>:
+  44:	dd cf       	rjmp	.-70     	; 0x0 <__vectors>
+
+00000046 <init>:
+	// PA3 as LED1
+	#define LED1_bp 3
+	// PA2 as LED2
+	#define LED2_bp 2
+	// enable outputs for LEDs
+	PORTA.DIR |= 1 << LED1_bp | 1 << LED2_bp;
+  46:	e0 e0       	ldi	r30, 0x00	; 0
+  48:	f4 e0       	ldi	r31, 0x04	; 4
+  4a:	80 81       	ld	r24, Z
+  4c:	8c 60       	ori	r24, 0x0C	; 12
+  4e:	80 83       	st	Z, r24
+	// turn them off: 0 -> LED turned on;
+	PORTA.OUT |= 1 << LED1_bp | 1 << LED2_bp; 
+  50:	84 81       	ldd	r24, Z+4	; 0x04
+  52:	8c 60       	ori	r24, 0x0C	; 12
+  54:	84 83       	std	Z+4, r24	; 0x04
+	
+	// digital in:
+	// PA4 as HW_BUTTON
+	#define HW_BUTTON_bp 4;
+	PORTA.DIRCLR = 1 << HW_BUTTON_bp;
+  56:	80 e1       	ldi	r24, 0x10	; 16
+  58:	82 83       	std	Z+2, r24	; 0x02
+	// enable inverted input (0 shows as 1 in PORTA.IN)
+	PORTA.PIN4CTRL |= 1 << 7; 
+  5a:	84 89       	ldd	r24, Z+20	; 0x14
+  5c:	80 68       	ori	r24, 0x80	; 128
+  5e:	84 8b       	std	Z+20, r24	; 0x14
+	// analog in:
+	// PA1 as ADC_SENSE1
+	// PA5 as ADC_SENSE2
+	// PA7 as ADC_TEMP
+	// disable input buffers of adc pins
+	PORTA.PIN1CTRL = (PORTA.PIN1CTRL & 0xf8) | 0x04;
+  60:	81 89       	ldd	r24, Z+17	; 0x11
+  62:	88 7f       	andi	r24, 0xF8	; 248
+  64:	84 60       	ori	r24, 0x04	; 4
+  66:	81 8b       	std	Z+17, r24	; 0x11
+	PORTA.PIN5CTRL = (PORTA.PIN5CTRL & 0xf8) | 0x04;
+  68:	85 89       	ldd	r24, Z+21	; 0x15
+  6a:	88 7f       	andi	r24, 0xF8	; 248
+  6c:	84 60       	ori	r24, 0x04	; 4
+  6e:	85 8b       	std	Z+21, r24	; 0x15
+	PORTA.PIN7CTRL = (PORTA.PIN7CTRL & 0xf8) | 0x04;
+  70:	87 89       	ldd	r24, Z+23	; 0x17
+  72:	88 7f       	andi	r24, 0xF8	; 248
+  74:	84 60       	ori	r24, 0x04	; 4
+  76:	87 8b       	std	Z+23, r24	; 0x17
+	//resolution to 10 bit
+	ADC0.CTRLA |= 1 << 2;
+  78:	e0 e0       	ldi	r30, 0x00	; 0
+  7a:	f6 e0       	ldi	r31, 0x06	; 6
+  7c:	80 81       	ld	r24, Z
+  7e:	84 60       	ori	r24, 0x04	; 4
+  80:	80 83       	st	Z, r24
+	//no samples accumulated
+	ADC0.CTRLB  = (ADC0.CTRLB & 0xf8) | 0x00;
+  82:	81 81       	ldd	r24, Z+1	; 0x01
+  84:	88 7f       	andi	r24, 0xF8	; 248
+  86:	81 83       	std	Z+1, r24	; 0x01
+	//set volt ref to internal
+	ADC0.CTRLC = (ADC0.CTRLC & 0x3f) | 0x1 << 4;
+  88:	82 81       	ldd	r24, Z+2	; 0x02
+  8a:	8f 72       	andi	r24, 0x2F	; 47
+  8c:	80 61       	ori	r24, 0x10	; 16
+  8e:	82 83       	std	Z+2, r24	; 0x02
+	// todo: configure VREF *****************************************************
+	//set Sample Capacitance to reduced (recommended for >1V)
+	ADC0.CTRLC |= 1 << 6;
+  90:	82 81       	ldd	r24, Z+2	; 0x02
+  92:	80 64       	ori	r24, 0x40	; 64
+  94:	82 83       	std	Z+2, r24	; 0x02
+	// TODO: set pright prescaler ***********************************************
+	ADC0.CTRLC = (ADC0.CTRLC & 0xf8) | 0x0 << 0; //temporary to DIV2
+  96:	82 81       	ldd	r24, Z+2	; 0x02
+  98:	88 7f       	andi	r24, 0xF8	; 248
+  9a:	82 83       	std	Z+2, r24	; 0x02
+	// configure default input for adc as PIN5 (will measure cell voltage at 0 current)
+	ADC0.MUXPOS = (ADC0.MUXPOS & 0xe0) | 0x05;
+  9c:	86 81       	ldd	r24, Z+6	; 0x06
+  9e:	80 7e       	andi	r24, 0xE0	; 224
+  a0:	85 60       	ori	r24, 0x05	; 5
+  a2:	86 83       	std	Z+6, r24	; 0x06
+	// enable adc
+	ADC0.CTRLA |= 1 << ADC_ENABLE_bp;
+  a4:	80 81       	ld	r24, Z
+  a6:	81 60       	ori	r24, 0x01	; 1
+  a8:	80 83       	st	Z, r24
+  aa:	08 95       	ret
+
+000000ac <main>:
+#include <util/delay.h>
+#include "init.c"
+
+int main(void)
+{
+	init();
+  ac:	cc df       	rcall	.-104    	; 0x46 <init>
+	{
+	
+		//_delay_ms(500);
+		//PORTA.OUTTGL = 0;
+		//delay_ms(500);
+			PORTA.OUTTGL = 1 << 2 | 1 << 3;
+  ae:	e0 e0       	ldi	r30, 0x00	; 0
+  b0:	f4 e0       	ldi	r31, 0x04	; 4
+  b2:	8c e0       	ldi	r24, 0x0C	; 12
+  b4:	87 83       	std	Z+7, r24	; 0x07
+  b6:	fe cf       	rjmp	.-4      	; 0xb4 <main+0x8>
+
+000000b8 <_exit>:
+  b8:	f8 94       	cli
+
+000000ba <__stop_program>:
+  ba:	ff cf       	rjmp	.-2      	; 0xba <__stop_program>
