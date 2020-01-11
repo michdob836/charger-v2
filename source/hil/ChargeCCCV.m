@@ -22,8 +22,8 @@ stats = [];
 figure(1);
 hold on;
 
-k = 1000;
-Ti = 2;
+k = 4000;
+Ti = 6;
 
 try
 Vcell = GetCellVoltage();
@@ -38,6 +38,9 @@ if (absMinV <= Vcell) && (Vcell < absMaxV)
     fprintf('\n');
     fwrite(s, 'G');
     fwrite(s, 1);
+    FileName=['./log/charging_',datestr(now,'yyyymmdd_HH-MM-SS'),'.tsv'];
+    fileID = fopen(FileName,'w');
+    fprintf(fileID,'Vcell\tIcell\tmeasured\tregon\ttime\n');
     tic
     Vcell = GetCellVoltage();
     regon = 0;
@@ -71,6 +74,8 @@ if (absMinV <= Vcell) && (Vcell < absMaxV)
         Vcell = GetCellVoltage();
         fprintf('Voltage: %1.2fV\t SetCurr: %4.0fmA\t MeasuredCurr: %4.0fmA\t Diff: %4.0fmA CV?:%1d\n', ...
                     Vcell, Icell, measured, diff, regon);
+        fprintf(fileID, '%1.2f\t%4.0f\t%4.0f\t%1d\t%5.2f\n', ...
+                    Vcell, Icell, measured, regon, toc);
         stats(:,end+1) = [Vcell Icell measured toc];
         cla;
         subplot(1, 2, 1)
@@ -90,10 +95,10 @@ else
     end
 end
 catch
-    fprintf('\nERROR.');
+    fprintf('\nERROR');
     AbortCharging();
 end
-
+fclose(fileID);
 SetCurrent(0);
 fclose(s);
 delete(s);
