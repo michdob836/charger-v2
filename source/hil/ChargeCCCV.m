@@ -15,7 +15,7 @@ fwrite(s, 0);
 
 absMaxV = 4.2;
 absMinV = 2.5;
-threshRegulatorOn = 0.1; %V
+threshRegulatorOn = 0.03; %V
 h = 0.15; % okres próbkowania, s
 
 stats = [];
