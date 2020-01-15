@@ -13,15 +13,16 @@ fwrite(s, 0);
 fwrite(s, 'G');
 fwrite(s, 0);
 
-absMaxV = 4.2;
-absMinV = 2.5;
-threshRegulatorOn = 0.03; %V
-h = 0.15; % okres próbkowania, s
-
 stats = [];
 figure(1);
 hold on;
 
+absMaxV = 4.25;
+absMinV = 2.5;
+Rs = 0.08;
+
+threshRegulatorOn = 0.03; %V
+h = 0.15; % okres próbkowania, s
 k = 4000;
 Ti = 6;
 
@@ -69,12 +70,15 @@ if (absMinV <= Vcell) && (Vcell < absMaxV)
             fprintf('\nCharged!\n');
             break;
         end
-        [measured, diff] = SetCurrent(Icell);
+        SetCurrent(Icell);
+        
+        measured = GetCellLowSide() / Rs * 1000;
+        diff = measured - Icell;
     
         Vcell = GetCellVoltage();
         fprintf('Voltage: %1.2fV\t SetCurr: %4.0fmA\t MeasuredCurr: %4.0fmA\t Diff: %4.0fmA CV?:%1d\n', ...
                     Vcell, Icell, measured, diff, regon);
-        fprintf(fileID, '%1.2f\t%4.0f\t%4.0f\t%1d\t%5.2f\n', ...
+        fprintf(fileID, '%1.5f\t%4.2f\t%4.2f\t%1d\t%5.3f\n', ...
                     Vcell, Icell, measured, regon, toc);
         stats(:,end+1) = [Vcell Icell measured toc];
         cla;
