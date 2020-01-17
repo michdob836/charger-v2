@@ -8,9 +8,9 @@
 int main(void)
 {
 	init();
-	//uint8_t sL = 64;
-	//char s[sL];
-	//uint16_t u;
+
+	uint8_t Is = 0;
+	uint16_t u;	
 
 	while(1)
 	{
@@ -20,6 +20,12 @@ int main(void)
 		{
 			switch(c)
 			{
+				case 'K':
+					Is = USART0_readChar();
+					u = GetHigh(0) - GetLow(0);
+					SetChargingCurrent(Is);
+					SendVoltageUart(u);
+					break;
 				case 'I':
 					SetChargingCurrent(USART0_readChar());
 					break;

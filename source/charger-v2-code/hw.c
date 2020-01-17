@@ -43,7 +43,7 @@ void init()
 	PORTA.PIN7CTRL = (PORTA.PIN7CTRL & 0xf8) | 0x04;
 	ADC0.CTRLA |= ADC_RESSEL_10BIT_gc;
 	//64 samples accumulated
-	ADC0.CTRLB = ADC_SAMPNUM_ACC64_gc;
+	ADC0.CTRLB = ADC_SAMPNUM_ACC16_gc;
 	//set volt ref to internal
 	ADC0.CTRLC = (ADC0.CTRLC & 0x3f) | 0x1 << 4;
 	//configure VREF
@@ -52,7 +52,7 @@ void init()
 	// reduced sample capacitance
 	ADC0.CTRLC |= ADC_SAMPCAP_bp;
 	// TODO: set pright prescaler ***********************************************
-	ADC0.CTRLC |= ADC_PRESC_DIV256_gc; 
+	ADC0.CTRLC |= ADC_PRESC_DIV2_gc; 
 	// configure default input for ADC as PIN5 (will measure cell voltage at 0 current)
 	ADC0.MUXPOS = (ADC0.MUXPOS & 0xe0) | 0x05;
 	// enable ADC
@@ -131,14 +131,14 @@ uint16_t GetCellVoltage()
 		; //waiting for conversion to be finished
 	}
 	ADC0.COMMAND &= ~ADC_STCONV_bm;
-	u = ADC0.RES; //average 64 samples
+	u = ADC0.RES; 
 	//change to another cell terminal - lower potential
 	ADC0.MUXPOS = (ADC0.MUXPOS & 0xe0) | 0x01; 
 	ADC0.COMMAND = ADC_STCONV_bm;
 	while (!(ADC0.INTFLAGS & ADC_RESRDY_bm)) {
 		; //waiting for conversion to be finished
 	}
-	u -= ADC0.RES ; //average 64 samples
+	u -= ADC0.RES ; 
 	ADC0.COMMAND &= ~ADC_STCONV_bm;
 	return u;	
 }

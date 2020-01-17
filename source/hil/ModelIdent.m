@@ -73,11 +73,11 @@ try
     end
 catch
     AbortCharging();
-    fclose(log);
 end
 SetCurrent(0);
 fclose(s);
 delete(s);
 clear s;
+fclose(log);
 fprintf('Cleanup done. Exiting.\n');
 end
