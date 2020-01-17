@@ -23,14 +23,9 @@ Rs = 0.08;
 
 threshRegulatorOn = 0.03; %V
 h = 0.25; % okres próbkowania, s
-k = 0.1;
-Ti = 0.0031;
-
-
-figure(1)
-tiledlayout(2,1)
-aV = nexttile;
-aC = nexttile;
+k = 8.3e-04;
+Ti = 3.16e-05;
+i=0;
 
 try
 Vcell = GetCellVoltage();
@@ -38,7 +33,6 @@ fprintf('Cell voltage: %1.2fV... ', Vcell);
 if (absMinV <= Vcell) && (Vcell < absMaxV)
     fprintf('ok.\n');
     chargingCurrent = cellCapacity * chargingRate;
-    i=chargingCurrent/1000/k;
     fprintf('Ready to charge to %1.2fV at %4.0fmA, %4.0fmA cutoff. Proceed? ',...
             targetV, chargingCurrent, cutoffC);
     pause();
@@ -53,7 +47,7 @@ if (absMinV <= Vcell) && (Vcell < absMaxV)
     time = toc;
     while (absMinV <= Vcell) && (Vcell < absMaxV) 
         while (  toc < time + h)
-            pause(0.01);
+            pause(0.03);
         end
         time = toc;
         
@@ -81,13 +75,13 @@ if (absMinV <= Vcell) && (Vcell < absMaxV)
         fprintf(fileID, '%1.5f\t%4.2f\t%4.2f\t%5.3f\n', ...
                     Vcell, Icell, measured, toc);
         stats(:,end+1) = [Vcell Icell measured toc];
-
-        plot(aV,stats(4,:)/60,stats(1,:), 'k');
-        plot(aC,stats(4,:)/60,stats(2,:), 'r');
+        cla;
+        subplot(1, 2, 1)
+        plot(stats(4,:)/60,stats(1,:), 'k');
+        subplot(1, 2, 2)
         hold on;
-        plot(aC, stats(4,:)/60,stats(3,:), 'b');
-        hold off;
-        drawnow;
+        plot(stats(4,:)/60,stats(2,:), 'r');
+        plot(stats(4,:)/60,stats(3,:), 'b');
     end
 else
     if Vcell < absMinV

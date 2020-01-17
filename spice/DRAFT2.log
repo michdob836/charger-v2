@@ -1,0 +1,22 @@
+Circuit: * E:\INZ\CHARGER-V2\SPICE\DRAFT2.ASC
+
+Limiting fall time of source i1 to 10
+.OP point found by inspection.
+
+Date: Fri Jan 17 09:42:47 2020
+Total elapsed time: 0.280 seconds.
+
+tnom = 27
+temp = 27
+method = modified trap
+totiter = 20090
+traniter = 20090
+tranpoints = 10046
+accept = 10041
+rejected = 5
+matrix size = 2
+fillins = 0
+solver = Normal
+Matrix Compiler1:       3 opcodes  0.1/[0.0]/0.1
+Matrix Compiler2: 116 bytes object code size  0.1/0.1/[0.1]
+

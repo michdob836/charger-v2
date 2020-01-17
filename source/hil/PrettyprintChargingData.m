@@ -8,7 +8,7 @@ opts.ExtraColumnsRule = "ignore";
 opts.EmptyLineRule = "read";
 
 % Import the data
-data = readtable("./log/charging_20200113_18-02-03.tsv", opts);
+data = readtable("./log/charging_20200113_18-05-38_cell_failure.tsv", opts);
 clear opts
 
 tiledlayout(2,1)
