@@ -133,6 +133,14 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="hw.c">
+      <SubType>compile</SubType>
+      <Link>hw.c</Link>
+    </Compile>
+    <Compile Include="hw.h">
+      <SubType>compile</SubType>
+      <Link>hw.h</Link>
+    </Compile>
     <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
