@@ -18,7 +18,8 @@ SetCurrent(0);
 absMaxV = 4.15;
 absMinV = 2.5;
 Rs = 0.08;
-delay = 0.0001; % s
+timestep = 0.001; % s
+h = 0.1; % s
 
 FileName=['./log/ident_',datestr(now,'yymmdd_HH-MM-SS'),'.tsv'];
 log = fopen(FileName,'w');
@@ -28,14 +29,23 @@ Is = [];
 Ir = [];
 Vc = [];
 U = 0;
+vl = 0;
 
 tic
-lastSet = toc();
+time = toc;
+lastSet = toc;
 try
     while toc < howLongWillItTake
-        pause(delay);
-        
+       
         if toc - lastSet > Tu
+            if Vc(1, end) > absMaxV
+                %bump down max voltage for rand
+                uMax = 0.9 * uMax;
+                if uMax < uMin
+                    fprintf('Finished: uMax < uMin\n');
+                    break;
+                end
+            end
             U = rand() * (uMax - uMin) + uMin;
             lastSet = toc;
         end
@@ -43,15 +53,24 @@ try
         Is(:,end+1) = [0 0];
         Ir(:,end+1) = [0 0];
         Vc(:,end+1) = [0 0];
+          
+        while (  toc < time + h)
+            % wait until its time for next sample
+            pause(timestep);
+        end
         
-        SetCurrent(U);
         Is(:,end) = [U toc];
+        time = toc;
+        fwrite(s, 'K');
+        fwrite(s, DacReg(U));
+        vcell = str2double(fscanf(s));
+        vcell = 7.433e-05 * vcell*4 + 0.0894;
         
-        vl = GetCellLowSide();
-        Ir(:,end) = [vl/Rs toc];
+%         vl = GetCellLowSide();
+%         Ir(:,end) = [vl/Rs toc];
         
-        vh = GetCellHighSide();
-        Vc(:,end) = [vh-vl toc];
+%         vh = GetCellHighSide();
+         Vc(:,end) = [vcell toc];
 
         fprintf(log, '%f\t%f\t%f\t%f\t%f\t%f\n', ...
                 Is(1, end), Is(2, end), Ir(1, end), Ir(2, end), ...
@@ -61,15 +80,6 @@ try
                 Is(1, end), Is(2, end), Ir(1, end), Ir(2, end), ...
                 Vc(1, end), Vc(2, end) );
         
-        if Vc(1, end) > absMaxV
-            %bump down max voltage for rand
-            uMax = 0.9 * uMax;
-            if uMax < uMin
-                fprintf('Finished: uMax < uMin\n');
-            end
-            break;
-        end
-            
     end
 catch
     AbortCharging();

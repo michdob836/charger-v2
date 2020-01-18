@@ -20,8 +20,9 @@ opts.VariableTypes = ["double", "double", "double", "double", "double", "double"
 opts.ExtraColumnsRule = "ignore";
 opts.EmptyLineRule = "read";
 
+file = 'ident_200117_23-25-53_now_really';
 % Import the data
-d = readtable("/home/dobi/transfer/inz/charger-v2/source/hil/log/ident_200114_18-16-49_data1.tsv", opts);
+d = readtable(['/home/dobi/transfer/inz/charger-v2/source/hil/log/' file '.tsv'], opts);
 
 % Is = timeseries(d.Is, d.t_Is/1000);
 % Ir = timeseries(d.Ir, d.t_Ir);

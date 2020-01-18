@@ -21,7 +21,7 @@ absMaxV = 4.25;
 absMinV = 2.5;
 Rs = 0.08;
 
-h = 0.1; % okres próbkowania, s
+h = 0.2; % okres próbkowania, s
 k = 3.5112 ;
 Ti = 0.2239;
 B1 = k*(1+h/(2*Ti));
@@ -70,8 +70,10 @@ if (absMinV <= Vcell) && (Vcell < absMaxV)
         Vcell = 7.433e-05 * vc*4 + 0.0894;
         
         E  = targetV - Vcell;
+        
+        dI = ;
         Icell = Icell + B1 * E + B2 * Eold;
-        Eold = E;
+        Eold  = E;
         
          fprintf('Voltage: %1.2f V\t SetCurr: %5.0f mA\t%5.2f\n', ...
                     Vcell, Icell*1000, time);
