@@ -19,9 +19,8 @@ hold on;
 
 absMaxV = 4.25;
 absMinV = 2.5;
-Rs = 0.08;
 
-h = 0.1; % okres próbkowania, s
+h = 0.2; % okres próbkowania, s
 k = 3.5112 ;
 Ti = 0.2239;
 B1 = k*(1+h/(2*Ti));
